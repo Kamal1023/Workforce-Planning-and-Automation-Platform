@@ -1,6 +1,6 @@
 # Workforce Planning and Automation Platform
 
-A comprehensive platform for managing workforce planning and automation processes.
+A comprehensive platform for managing workforce planning and automation processes for HR's of Start-up's.
 
 ## Features
 
@@ -70,10 +70,6 @@ npm run dev
 cd frontend
 npm start
 ```
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Contributing
 
