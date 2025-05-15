@@ -1,7 +1,8 @@
 require('dotenv').config();
-console.log('DB_NAME:', process.env.DB_NAME);
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const { Sequelize } = require('sequelize');
 const authRoutes = require('./routes/auth');
 const employeeRoutes = require('./routes/employees');
@@ -10,6 +11,16 @@ const leaveRoutes = require('./routes/leaves');
 const dashboardRoutes = require('./routes/dashboard');
 
 const app = express();
+
+// Security middleware
+app.use(helmet());
+
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100 // limit each IP to 100 requests per windowMs
+});
+app.use(limiter);
 
 // Middleware
 const allowedOrigins = [
@@ -40,7 +51,8 @@ const sequelize = new Sequelize(
   process.env.DB_PASSWORD || '',
   {
     host: process.env.DB_HOST || 'localhost',
-    dialect: 'mysql'
+    dialect: 'mysql',
+    logging: false // Disable SQL query logging in production
   }
 );
 
@@ -59,7 +71,11 @@ app.use('/api/dashboard', dashboardRoutes);
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ message: 'Something went wrong!' });
+  res.status(500).json({ 
+    message: process.env.NODE_ENV === 'production' 
+      ? 'Something went wrong!' 
+      : err.message 
+  });
 });
 
 const PORT = process.env.PORT || 5000;

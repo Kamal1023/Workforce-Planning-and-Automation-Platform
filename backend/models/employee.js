@@ -26,7 +26,8 @@ module.exports = (sequelize) => {
     },
     skillset: {
       type: DataTypes.TEXT,
-      allowNull: true
+      allowNull: true,
+      comment: 'Comma-separated list of skills'
     },
     location: {
       type: DataTypes.STRING,
@@ -37,11 +38,23 @@ module.exports = (sequelize) => {
       allowNull: false
     },
     status: {
-      type: DataTypes.ENUM('ACTIVE', 'BENCH', 'ON_LEAVE'),
+      type: DataTypes.ENUM('ACTIVE', 'BENCH', 'ON_LEAVE', 'TERMINATED'),
       defaultValue: 'ACTIVE'
     },
     last_bench_date: {
       type: DataTypes.DATEONLY,
+      allowNull: true
+    },
+    department: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    designation: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    phone_number: {
+      type: DataTypes.STRING,
       allowNull: true
     }
   }, {

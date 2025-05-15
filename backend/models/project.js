@@ -1,43 +1,66 @@
-const { DataTypes } = require('sequelize');
-
-module.exports = (sequelize) => {
+module.exports = (sequelize, DataTypes) => {
   const Project = sequelize.define('Project', {
     id: {
       type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true
+      autoIncrement: true,
+      primaryKey: true
     },
-    project_code: {
+    projectCode: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true
+      unique: true,
+      field: 'project_code'
     },
     name: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    customer_name: {
+    customer: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
+      field: 'customer_name'
     },
-    offshore_headcount: {
+    offshoreHeadcount: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      defaultValue: 0
+      field: 'offshore_headcount'
     },
-    onsite_headcount: {
+    onsiteHeadcount: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      defaultValue: 0
+      field: 'onsite_headcount'
     },
     status: {
-      type: DataTypes.ENUM('ACTIVE', 'COMPLETED', 'ON_HOLD'),
+      type: DataTypes.ENUM('ACTIVE', 'ON_HOLD', 'COMPLETED', 'CANCELLED'),
+      allowNull: false,
       defaultValue: 'ACTIVE'
+    },
+    actions: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+    startDate: {
+      type: DataTypes.DATEONLY,
+      allowNull: false,
+      field: 'start_date'
+    },
+    endDate: {
+      type: DataTypes.DATEONLY,
+      allowNull: true,
+      field: 'end_date'
     }
   }, {
+    tableName: 'projects',
     timestamps: true,
-    tableName: 'projects'
+    underscored: true
   });
 
+  Project.associate = models => {
+    Project.hasMany(models.ProjectResource, { 
+      foreignKey: 'project_id',
+      as: 'resources'
+    });
+  };
+
   return Project;
-}; 
+};

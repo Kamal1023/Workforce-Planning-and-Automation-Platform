@@ -1,4 +1,4 @@
-const { Sequelize } = require('sequelize');
+const { Sequelize, DataTypes } = require('sequelize');
 const config = require('../config/database');
 
 const env = process.env.NODE_ENV || 'development';
@@ -16,28 +16,26 @@ const sequelize = new Sequelize(
   }
 );
 
+const db = {};
 
-const User = require('./user')(sequelize);
-const Employee = require('./employee')(sequelize);
-const Project = require('./project')(sequelize);
-const ProjectResource = require('./projectResource')(sequelize);
-const LeaveRequest = require('./leaveRequest')(sequelize);
+// Import models
+db.User = require('./user')(sequelize, DataTypes);
+db.Employee = require('./employee')(sequelize, DataTypes);
+db.Project = require('./project')(sequelize, DataTypes);
+db.ProjectResource = require('./projectResource')(sequelize, DataTypes);
+db.LeaveRequest = require('./leaveRequest')(sequelize, DataTypes);
 
 // Define relationships
-Employee.belongsToMany(Project, { through: ProjectResource });
-Project.belongsToMany(Employee, { through: ProjectResource });
+db.Employee.belongsToMany(db.Project, { through: db.ProjectResource });
+db.Project.belongsToMany(db.Employee, { through: db.ProjectResource });
 
-Employee.hasMany(LeaveRequest);
-LeaveRequest.belongsTo(Employee);
+db.Employee.hasMany(db.LeaveRequest);
+db.LeaveRequest.belongsTo(db.Employee);
 
-User.hasMany(LeaveRequest, { as: 'ApprovedLeaves', foreignKey: 'approved_by' });
-LeaveRequest.belongsTo(User, { as: 'Approver', foreignKey: 'approved_by' });
+db.User.hasMany(db.LeaveRequest, { as: 'ApprovedLeaves', foreignKey: 'approved_by' });
+db.LeaveRequest.belongsTo(db.User, { as: 'Approver', foreignKey: 'approved_by' });
 
-module.exports = {
-  sequelize,
-  User,
-  Employee,
-  Project,
-  ProjectResource,
-  LeaveRequest
-}; 
+db.sequelize = sequelize;
+db.Sequelize = Sequelize;
+
+module.exports = db; 
